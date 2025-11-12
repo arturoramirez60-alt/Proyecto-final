@@ -115,6 +115,7 @@ def medicos_por_año():
     
     navegador = abrir_navegador()
     navegador.get("http://sinaiscap.salud.gob.mx:8080/DGIS/")
+    
     navegar(navegador)
     
     time.sleep(2)
@@ -132,13 +133,13 @@ def medicos_por_año():
     estados = estados[0:33]
     
     for estado in estados:
-        
+        navegador.execute_script("document.body.style.zoom='50%'")
         
         wait = WebDriverWait(navegador, 5)
         i = wait.until(EC.element_to_be_clickable((By.XPATH, f"//span[text()='{estado}']")))
         i.click()
         
-        time.sleep(2)
+        time.sleep(3)
         elemento.click()
         
         html = contenido(navegador.page_source)
@@ -166,11 +167,13 @@ def medicos_por_institucion():
             "total":[]}
     navegador = abrir_navegador()
     navegador.get("http://sinaiscap.salud.gob.mx:8080/DGIS/")
+    
     time.sleep(3) 
     navegar(navegador)  
     
     instituciones =  navegador.find_element(By.ID, "nav-Institucion-tab")
     instituciones.click()
+    navegador.execute_script("document.body.style.zoom='50%'")
     time.sleep(3)
     tabla = navegador.find_element(By.ID, "tabla22-tab")
     tabla.click()
@@ -184,6 +187,7 @@ def medicos_por_institucion():
     filas = tabla[2].find_all("tr")
     time.sleep(3)
     for fila in filas[1:]:
+        
         columnas = fila.find_all("td")
         data["institucion"].append(columnas[0].text)
         data["total"].append(columnas[11].text)
@@ -200,10 +204,10 @@ def poblacion():
     navegador = abrir_navegador()
     navegador.get("https://www.inegi.org.mx/temas/estructura/")
     navegador.execute_script("document.body.style.zoom='10%'") 
-    time.sleep(3)
+    time.sleep(4)
     boton_tabla = navegador.find_element(By.ID, value= "btn_tablagraf_gral0")
     boton_tabla.click()
-    time.sleep(3)
+    time.sleep(4)
     html = contenido(navegador.page_source)
 
     tabla = html.find("div", attrs= {"class":"card-body"})

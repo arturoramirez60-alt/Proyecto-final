@@ -34,27 +34,27 @@ def crear_tablas_webscraper(ps):
             ps = input("contraseña incorrecta, intente de nuevo: ")
         
  
-    #poblacion_derechohabiente = li.limpiar_poblacion_derechohabiente()
-    #poblacion_derechohabiente.to_sql("poblacion_derechohabiente",conexion, if_exists =  "replace")
+    poblacion_derechohabiente = li.limpiar_poblacion_derechohabiente()
+    poblacion_derechohabiente.to_sql("poblacion_derechohabiente",conexion, if_exists =  "replace")
     
-    #poblacion_afiliada = li.limpiar_poblacion_afilada()
-    #poblacion_afiliada.to_sql("poblacion_afiliada",conexion, if_exists =  "replace")
+    poblacion_afiliada = li.limpiar_poblacion_afilada()
+    poblacion_afiliada.to_sql("poblacion_afiliada",conexion, if_exists =  "replace")
     
-    #personal_salud_año = li.limpiar_personal_salud_año()
-    #personal_salud_año.to_sql("personal_salud_año",conexion, if_exists =  "replace")
+    personal_salud_año = li.limpiar_personal_salud_año()
+    personal_salud_año.to_sql("personal_salud_año",conexion, if_exists =  "replace")
     
-    #personal_salud_institucion =  li.limpiar_personal_salud_institucion()
-    #personal_salud_institucion.to_sql("personal_salud_institucion",conexion, if_exists =  "replace")
+    personal_salud_institucion =  li.limpiar_personal_salud_institucion()
+    personal_salud_institucion.to_sql("personal_salud_institucion",conexion, if_exists =  "replace")
     
     poblacion_total =  li.limpiar_poblacion()
     poblacion_total.to_sql("poblacion_total",conexion, if_exists =  "replace")
     print(poblacion_total)
     
-    #_,estados =  li.crear_estados()
-    #estados.to_sql("estados",conexion, if_exists =  "replace")
+    _,estados =  li.crear_estados()
+    estados.to_sql("estados",conexion, if_exists =  "replace")
     
-    #_,instituciones =  li.crear_instituciones()
-    #instituciones.to_sql("instituciones",conexion, if_exists =  "replace")
+    _,instituciones =  li.crear_instituciones()
+    instituciones.to_sql("instituciones",conexion, if_exists =  "replace")
     
     print("ya quedo")
     

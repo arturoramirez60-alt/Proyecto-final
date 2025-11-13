@@ -210,7 +210,8 @@ def limpiar_personal_salud_institucion():
     
 def limpiar_poblacion():
     df = rec.poblacion()
-    crear_indice(df)
+    df.Año = df.Año.astype("int")
+    df.set_index("Año",inplace= True)
     return df
     
      

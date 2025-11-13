@@ -25,28 +25,36 @@ def crear_conexion(ps):
 
 def crear_tablas_webscraper(ps):
     print("El programa se esta ejecutando, espere por favor")
-    conexion =  crear_conexion(ps)
+    Estado = True
+    while Estado:
+        try:
+            conexion =  crear_conexion(ps)
+            Estado = False
+        except:
+            ps = input("contraseña incorrecta, intente de nuevo: ")
+        
  
-    poblacion_derechohabiente = li.limpiar_poblacion_derechohabiente()
-    poblacion_derechohabiente.to_sql("poblacion_derechohabiente",conexion, if_exists =  "replace")
+    #poblacion_derechohabiente = li.limpiar_poblacion_derechohabiente()
+    #poblacion_derechohabiente.to_sql("poblacion_derechohabiente",conexion, if_exists =  "replace")
     
-    poblacion_afiliada = li.limpiar_poblacion_afilada()
-    poblacion_afiliada.to_sql("poblacion_afiliada",conexion, if_exists =  "replace")
+    #poblacion_afiliada = li.limpiar_poblacion_afilada()
+    #poblacion_afiliada.to_sql("poblacion_afiliada",conexion, if_exists =  "replace")
     
-    personal_salud_año = li.limpiar_personal_salud_año()
-    personal_salud_año.to_sql("personal_salud_año",conexion, if_exists =  "replace")
+    #personal_salud_año = li.limpiar_personal_salud_año()
+    #personal_salud_año.to_sql("personal_salud_año",conexion, if_exists =  "replace")
     
-    personal_salud_institucion =  li.limpiar_personal_salud_institucion()
-    personal_salud_institucion.to_sql("personal_salud_institucion",conexion, if_exists =  "replace")
+    #personal_salud_institucion =  li.limpiar_personal_salud_institucion()
+    #personal_salud_institucion.to_sql("personal_salud_institucion",conexion, if_exists =  "replace")
     
     poblacion_total =  li.limpiar_poblacion()
     poblacion_total.to_sql("poblacion_total",conexion, if_exists =  "replace")
+    print(poblacion_total)
     
-    _,estados =  li.crear_estados()
-    estados.to_sql("estados",conexion, if_exists =  "replace")
+    #_,estados =  li.crear_estados()
+    #estados.to_sql("estados",conexion, if_exists =  "replace")
     
-    _,instituciones =  li.crear_instituciones()
-    instituciones.to_sql("instituciones",conexion, if_exists =  "replace")
+    #_,instituciones =  li.crear_instituciones()
+    #instituciones.to_sql("instituciones",conexion, if_exists =  "replace")
     
     print("ya quedo")
     
@@ -65,7 +73,7 @@ def crear_tablas_csv(ps):
     personal_salud_institucion =  pd.read_csv("datasets/personal_salud_institucion.csv",index_col="ID")
     personal_salud_institucion.to_sql("personal_salud_institucion",conexion, if_exists =  "replace")
     
-    poblacion_total =  pd.read_csv("datasets/poblacion_total.csv",index_col="ID")
+    poblacion_total =  pd.read_csv("datasets/poblacion_total.csv",index_col="Año")
     poblacion_total.to_sql("poblacion_total",conexion, if_exists =  "replace")
     
     estados =  pd.read_csv("datasets/estados.csv",index_col="ID")

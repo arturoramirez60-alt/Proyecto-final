@@ -204,10 +204,10 @@ def poblacion():
     navegador = abrir_navegador()
     navegador.get("https://www.inegi.org.mx/temas/estructura/")
     navegador.execute_script("document.body.style.zoom='10%'") 
-    time.sleep(4)
+    time.sleep(5)
     boton_tabla = navegador.find_element(By.ID, value= "btn_tablagraf_gral0")
     boton_tabla.click()
-    time.sleep(4)
+    time.sleep(5)
     html = contenido(navegador.page_source)
 
     tabla = html.find("div", attrs= {"class":"card-body"})

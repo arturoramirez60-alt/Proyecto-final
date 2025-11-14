@@ -209,8 +209,12 @@ def limpiar_personal_salud_institucion():
     return df
     
 def limpiar_poblacion():
-    df = rec.poblacion()
-    df.Año = df.Año.astype("int")
+    df_temp = rec.poblacion()
+    df_temp.Año = df_temp.Año.astype("int")
+    data = {"Año":[i for i in range(1910,2026)]}
+    df =  pd.DataFrame(data)
+    df = df.merge(df_temp, on="Año", how="left")
+    df.ffill(inplace=True)
     df.set_index("Año",inplace= True)
     return df
     

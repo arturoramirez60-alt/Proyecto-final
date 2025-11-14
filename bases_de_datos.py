@@ -17,7 +17,7 @@ class DataDB(Enum):
 def crear_conexion(ps):
     cadena_conexion  = (f"mysql+mysqlconnector://"
                        f"{DataDB.USER.value}:"
-                       f"{ps}"
+                       f"{DataDB.PASSWORD.value}"
                        f"@{DataDB.SERVER.value}"
                        f"/{DataDB.NAME_BD.value}")
 
@@ -42,37 +42,26 @@ def crear_llaves_primaras(ps):
     conexion = conectar_mysql(ps)
     cursor = conexion.cursor()
     
-
-    #para estados
-    cursor.execute("ALTER TABLE `recursos_en_salud`.`estados` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
-    #para instituciones
-    cursor.execute("ALTER TABLE `recursos_en_salud`.`instituciones` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
-    #para personal salud año
-    cursor.execute("ALTER TABLE `recursos_en_salud`.`personal_salud_año` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
-    #para poblacion derechohabiente
-    cursor.execute("ALTER TABLE `recursos_en_salud`.`poblacion_derechohabiente` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
-    #para poblacion afiliada
-    cursor.execute("ALTER TABLE `recursos_en_salud`.`poblacion_afiliada` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
-    #para personal salud institucion
-    cursor.execute("ALTER TABLE `recursos_en_salud`.`personal_salud_institucion` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
-    #para poblacion total
-    cursor.execute("ALTER TABLE `recursos_en_salud`.`poblacion_total` CHANGE COLUMN `Año` `Año` BIGINT NOT NULL ,ADD PRIMARY KEY (`Año`);;")
-    
+    cursor.execute("show tables")
+    tablas = cursor.fetchall()
+    for tabla in tablas:
+        try:
+            #Para todas las tablas cuya llave primaria es ID
+            cursor.execute(f"ALTER TABLE `recursos_en_salud`.`{tabla[0]}` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
+        except:
+            cursor.execute("ALTER TABLE `recursos_en_salud`.`poblacion_total` CHANGE COLUMN `Año` `Año` BIGINT NOT NULL ,ADD PRIMARY KEY (`Año`);;")
+            
     conexion.commit()
     cursor.close()
     conexion.close()
     
 def crear_tablas_webscraper(ps):
-    print("El programa se esta ejecutando, espere por favor")
-    Estado = True
-    while Estado:
-        try:
-            conexion =  crear_conexion(ps)
-            Estado = False
-        except:
-            ps = input("contraseña incorrecta, intente de nuevo: ")
-        
+    
  
+    conexion =  crear_conexion(ps)
+    print(conexion)
+        
+    print("El programa se esta ejecutando, espere por favor")
     poblacion_derechohabiente = li.limpiar_poblacion_derechohabiente()
     poblacion_derechohabiente.to_sql("poblacion_derechohabiente",conexion, if_exists =  "replace")
     

@@ -23,6 +23,45 @@ def crear_conexion(ps):
 
     return create_engine(cadena_conexion).connect()
 
+def conectar_mysql(ps):
+    try:
+        conexion = connect(
+            host= DataDB.SERVER.value,
+            user= DataDB.USER.value,
+            password= ps,
+            database= DataDB.NAME_BD.value
+        )
+        return conexion
+    except Error as e:
+        print(e)
+        
+def crear_llaves_foraneas(ps):
+    pass
+
+def crear_llaves_primaras(ps):
+    conexion = conectar_mysql(ps)
+    cursor = conexion.cursor()
+    
+
+    #para estados
+    cursor.execute("ALTER TABLE `recursos_en_salud`.`estados` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
+    #para instituciones
+    cursor.execute("ALTER TABLE `recursos_en_salud`.`instituciones` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
+    #para personal salud año
+    cursor.execute("ALTER TABLE `recursos_en_salud`.`personal_salud_año` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
+    #para poblacion derechohabiente
+    cursor.execute("ALTER TABLE `recursos_en_salud`.`poblacion_derechohabiente` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
+    #para poblacion afiliada
+    cursor.execute("ALTER TABLE `recursos_en_salud`.`poblacion_afiliada` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
+    #para personal salud institucion
+    cursor.execute("ALTER TABLE `recursos_en_salud`.`personal_salud_institucion` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
+    #para poblacion total
+    cursor.execute("ALTER TABLE `recursos_en_salud`.`poblacion_total` CHANGE COLUMN `Año` `Año` BIGINT NOT NULL ,ADD PRIMARY KEY (`Año`);;")
+    
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    
 def crear_tablas_webscraper(ps):
     print("El programa se esta ejecutando, espere por favor")
     Estado = True
@@ -56,6 +95,8 @@ def crear_tablas_webscraper(ps):
     _,instituciones =  li.crear_instituciones()
     instituciones.to_sql("instituciones",conexion, if_exists =  "replace")
     
+    crear_llaves_primaras(ps)
+    
     print("ya quedo")
     
 def crear_tablas_csv(ps):
@@ -81,6 +122,8 @@ def crear_tablas_csv(ps):
     
     instituciones =  pd.read_csv("datasets/instituciones.csv",index_col="ID")
     instituciones.to_sql("instituciones",conexion, if_exists =  "replace")
+    
+    crear_llaves_primaras(ps)
     
     print("ya quedo")
     

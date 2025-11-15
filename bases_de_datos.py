@@ -1,6 +1,6 @@
 import limpieza as li
 from sqlalchemy import create_engine
-from sqlalchemy.types import VARCHAR, INTEGER
+from sqlalchemy.types import INT
 import pandas as pd
 from enum import Enum
 import pandas as  pd
@@ -35,26 +35,43 @@ def conectar_mysql(ps):
     except Error as e:
         print(e)
         
-def crear_llaves_foraneas(ps):
-    pass
-
-def crear_llaves_primaras(ps):
+def crear_llaves_primarias(ps):
+    
     conexion = conectar_mysql(ps)
     cursor = conexion.cursor()
-    
     cursor.execute("show tables")
     tablas = cursor.fetchall()
     for tabla in tablas:
         try:
-            #Para todas las tablas cuya llave primaria es ID
-            cursor.execute(f"ALTER TABLE `recursos_en_salud`.`{tabla[0]}` CHANGE COLUMN `ID` `ID` BIGINT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
+            #Para todas las tablas cuya llave primaria es ID 
+            cursor.execute(f"ALTER TABLE `recursos_en_salud`.`{tabla[0]}` CHANGE COLUMN `ID` `ID` INT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
         except:
-            cursor.execute("ALTER TABLE `recursos_en_salud`.`poblacion_total` CHANGE COLUMN `Año` `Año` BIGINT NOT NULL ,ADD PRIMARY KEY (`Año`);;")
-            
+            cursor.execute("ALTER TABLE `recursos_en_salud`.`poblacion_total` CHANGE COLUMN `Año` `Año` INT NOT NULL ,ADD PRIMARY KEY (`Año`);;")
+    conexion.commit()
+    cursor.close()
+    cursor.close()
+    
+def crear_relaciones(ps):
+    conexion = conectar_mysql(ps)
+    cursor = conexion.cursor()
+    #Relacion con tabla poblacion_total FK
+    cursor.execute("ALTER TABLE recursos_en_salud.personal_salud_año ADD CONSTRAINT fk_personal_año FOREIGN KEY (Año) REFERENCES recursos_en_salud.poblacion_total(Año);")
+    #Relacion con tabla estados FKRelacion con tabla estados FK
+    cursor.execute("ALTER TABLE recursos_en_salud.personal_salud_año ADD CONSTRAINT fk_personal_estado FOREIGN KEY (ID_Estado) REFERENCES recursos_en_salud.estados(ID);")
+    #Relacion con tabla poblacion_total FK
+    cursor.execute("ALTER TABLE recursos_en_salud.poblacion_afiliada ADD CONSTRAINT fk_afiliados_año FOREIGN KEY (Año) REFERENCES recursos_en_salud.poblacion_total(Año);")
+    #Relacion con tabla estado FK
+    cursor.execute("ALTER TABLE recursos_en_salud.poblacion_afiliada ADD CONSTRAINT fk_poblacion_estado FOREIGN KEY (ID_Estado) REFERENCES recursos_en_salud.estados(ID);")
+    #Relacion con tabla poblacion_total FK
+    cursor.execute("ALTER TABLE recursos_en_salud.poblacion_derechohabiente ADD CONSTRAINT fk_derechohabientes_año FOREIGN KEY (Año) REFERENCES recursos_en_salud.poblacion_total(Año);")
+    #Relacion con tabla instituciones FK
+    cursor.execute("ALTER TABLE recursos_en_salud.poblacion_derechohabiente ADD CONSTRAINT fk_institucion_derechohabientes FOREIGN KEY (ID_Institucion) REFERENCES recursos_en_salud.instituciones(ID);")
+    #Relacion con tabla instituciones FK 
+    cursor.execute("ALTER TABLE recursos_en_salud.personal_salud_institucion ADD CONSTRAINT fk_personal_instituciones FOREIGN KEY (ID_Institucion) REFERENCES recursos_en_salud.instituciones(ID);") 
     conexion.commit()
     cursor.close()
     conexion.close()
-    
+
 def crear_tablas_webscraper(ps):
     
  
@@ -84,7 +101,8 @@ def crear_tablas_webscraper(ps):
     _,instituciones =  li.crear_instituciones()
     instituciones.to_sql("instituciones",conexion, if_exists =  "replace")
     
-    crear_llaves_primaras(ps)
+    crear_llaves_primarias(ps)
+    crear_relaciones(ps)
     
     print("ya quedo")
     
@@ -92,27 +110,28 @@ def crear_tablas_csv(ps):
     conexion =  crear_conexion(ps)
  
     poblacion_derechohabiente = pd.read_csv("datasets/poblacion_derechohabiente.csv",index_col="ID")
-    poblacion_derechohabiente.to_sql("poblacion_derechohabiente",conexion, if_exists =  "replace")
+    poblacion_derechohabiente.to_sql("poblacion_derechohabiente",conexion, if_exists =  "replace", dtype={"ID":INT,"ID_Institucion":INT,"Año":INT})
     
     poblacion_afiliada = pd.read_csv("datasets/poblacion_afiliada.csv",index_col="ID")
-    poblacion_afiliada.to_sql("poblacion_afiliada",conexion, if_exists =  "replace")
+    poblacion_afiliada.to_sql("poblacion_afiliada",conexion, if_exists =  "replace",dtype={"ID":INT,"ID_Estado":INT,"Año":INT})
     
     personal_salud_año = pd.read_csv("datasets/personal_salud_año.csv",index_col="ID")
-    personal_salud_año.to_sql("personal_salud_año",conexion, if_exists =  "replace")
+    personal_salud_año.to_sql("personal_salud_año",conexion, if_exists =  "replace",dtype={"ID":INT,"ID_Estado":INT,"Año":INT})
     
     personal_salud_institucion =  pd.read_csv("datasets/personal_salud_institucion.csv",index_col="ID")
-    personal_salud_institucion.to_sql("personal_salud_institucion",conexion, if_exists =  "replace")
+    personal_salud_institucion.to_sql("personal_salud_institucion",conexion, if_exists =  "replace",dtype={"ID":INT,"ID_Institucion":INT})
     
     poblacion_total =  pd.read_csv("datasets/poblacion_total.csv",index_col="Año")
-    poblacion_total.to_sql("poblacion_total",conexion, if_exists =  "replace")
+    poblacion_total.to_sql("poblacion_total",conexion, if_exists =  "replace",dtype={"Año":INT})
     
     estados =  pd.read_csv("datasets/estados.csv",index_col="ID")
-    estados.to_sql("estados",conexion, if_exists =  "replace")
+    estados.to_sql("estados",conexion, if_exists =  "replace", dtype={"ID":INT})
     
     instituciones =  pd.read_csv("datasets/instituciones.csv",index_col="ID")
-    instituciones.to_sql("instituciones",conexion, if_exists =  "replace")
+    instituciones.to_sql("instituciones",conexion, if_exists =  "replace", dtype={"ID":INT})
     
-    crear_llaves_primaras(ps)
+    crear_llaves_primarias(ps)
+    crear_relaciones(ps)
     
     print("ya quedo")
     

@@ -1,12 +1,5 @@
 USE recursos_en_salud;
 
-/* PERSONAL_SALUD_AñO */
-SELECT * FROM recursos_en_salud.personal_salud_año;
-
-/* FKs */
-SELECT * FROM recursos_en_salud.poblacion_total;
-SELECT * FROM recursos_en_salud.estados;
-
 -- Relacion con tabla poblacion_total FK
 ALTER TABLE recursos_en_salud.personal_salud_año
 ADD CONSTRAINT fk_personal_año
@@ -18,16 +11,6 @@ ALTER TABLE recursos_en_salud.personal_salud_año
 ADD CONSTRAINT fk_personal_estado
 FOREIGN KEY (ID_Estado)
 REFERENCES recursos_en_salud.estados(ID);
-
-SHOW CREATE TABLE recursos_en_salud.personal_salud_año;
-    
-
-/* POBLACION_AFILIADA */
-SELECT * FROM recursos_en_salud.poblacion_afiliada;
-
-/* FKs */
-SELECT * FROM recursos_en_salud.poblacion_total;
-SELECT * FROM recursos_en_salud.estados;
 
 -- Relacion con tabla poblacion_total FK
 ALTER TABLE recursos_en_salud.poblacion_afiliada
@@ -41,16 +24,6 @@ ADD CONSTRAINT fk_poblacion_estado
 FOREIGN KEY (ID_Estado)
 REFERENCES recursos_en_salud.estados(ID);
 
-SHOW CREATE TABLE recursos_en_salud.poblacion_afiliada;
-
-
-/* POBLACION_DERECHOHABIENTE */
-SELECT * FROM recursos_en_salud.poblacion_derechohabiente;
-
-/* FKs */
-SELECT * FROM recursos_en_salud.poblacion_total;
-SELECT * FROM recursos_en_salud.instituciones;
-
 -- Relacion con tabla poblacion_total FK
 ALTER TABLE recursos_en_salud.poblacion_derechohabiente
 ADD CONSTRAINT fk_derechohabientes_año
@@ -63,22 +36,19 @@ ADD CONSTRAINT fk_institucion_derechohabientes
 FOREIGN KEY (ID_Institucion)
 REFERENCES recursos_en_salud.instituciones(ID);
 
-SHOW CREATE TABLE recursos_en_salud.poblacion_derechohabiente;
-
-
-/* PERSONAL_SALUD_INSTITUCION */
-SELECT * FROM recursos_en_salud.personal_salud_institucion;
-
-/* FKs */
-SELECT * FROM recursos_en_salud.instituciones;
-
 -- Relacion con tabla instituciones FK 
 ALTER TABLE recursos_en_salud.personal_salud_institucion
 ADD CONSTRAINT fk_personal_instituciones
 FOREIGN KEY (ID_Institucion)
 REFERENCES recursos_en_salud.instituciones(ID);
 
-SHOW CREATE TABLE recursos_en_salud.personal_salud_institucion;
+-- Relacion con tabla poblacion_total FK 
+ALTER TABLE recursos_en_salud.personal_salud_institucion
+ADD CONSTRAINT fk_poblacion
+FOREIGN KEY (Año)
+REFERENCES recursos_en_salud.poblacion_total(Año);
+
+
 
 
 

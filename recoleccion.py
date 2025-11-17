@@ -164,7 +164,8 @@ def medicos_por_año():
 def medicos_por_institucion():
     
     data = {"institucion":[],
-            "total":[]}
+            "total":[],
+            "Año":[]}
     navegador = abrir_navegador()
     navegador.get("http://sinaiscap.salud.gob.mx:8080/DGIS/")
     
@@ -191,6 +192,7 @@ def medicos_por_institucion():
         columnas = fila.find_all("td")
         data["institucion"].append(columnas[0].text)
         data["total"].append(columnas[11].text)
+        data["Año"].append(2020)
         
     navegador.close()
     df =  pd.DataFrame(data)

@@ -205,7 +205,7 @@ def limpiar_personal_salud_institucion():
     df.drop(columns= "institucion", inplace= True)
     mapear_instituciones(df)
     crear_indice(df)
-    df =  df[["ID_Institucion","total"]]
+    df =  df[["ID_Institucion","total","Año"]]
     return df
     
 def limpiar_poblacion():

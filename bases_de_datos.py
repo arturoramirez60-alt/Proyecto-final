@@ -17,7 +17,7 @@ class DataDB(Enum):
 def crear_conexion(ps):
     cadena_conexion  = (f"mysql+mysqlconnector://"
                        f"{DataDB.USER.value}:"
-                       f"{DataDB.PASSWORD.value}"
+                       f"{ps}"
                        f"@{DataDB.SERVER.value}"
                        f"/{DataDB.NAME_BD.value}")
 
@@ -67,39 +67,85 @@ def crear_relaciones(ps):
     #Relacion con tabla instituciones FK
     cursor.execute("ALTER TABLE recursos_en_salud.poblacion_derechohabiente ADD CONSTRAINT fk_institucion_derechohabientes FOREIGN KEY (ID_Institucion) REFERENCES recursos_en_salud.instituciones(ID);")
     #Relacion con tabla instituciones FK 
-    cursor.execute("ALTER TABLE recursos_en_salud.personal_salud_institucion ADD CONSTRAINT fk_personal_instituciones FOREIGN KEY (ID_Institucion) REFERENCES recursos_en_salud.instituciones(ID);") 
+    cursor.execute("ALTER TABLE recursos_en_salud.personal_salud_institucion ADD CONSTRAINT fk_personal_instituciones FOREIGN KEY (ID_Institucion) REFERENCES recursos_en_salud.instituciones(ID);")
+    #relacion con tabla poblacion_total FK
+    cursor.execute("ALTER TABLE recursos_en_salud.personal_salud_institucion ADD CONSTRAINT fk_personal_instituciones_año FOREIGN KEY (Año) REFERENCES recursos_en_salud.poblacion_total(Año);") 
     conexion.commit()
     cursor.close()
     conexion.close()
-
+def crear_procedures(ps):
+    conexion = conectar_mysql(ps)
+    cursor = conexion.cursor()
+    #procedure para personal_salud_año
+    try:
+        cursor.execute( "create procedure sp_personal_salud_año() begin"
+	                " select psa.*, e.Estado, pt.Poblacion as Poblacion_total"
+	                " from personal_salud_año as psa "
+	                " left join estados as e on e.ID = psa.ID_Estado"
+	                " left join poblacion_total as pt on psa.Año = pt.Año;"
+                    " end")
+    except:
+        pass
+    #procedure para personal_salud_institucion
+    try:
+        cursor.execute( "create procedure sp_personal_salud_institucion() begin"
+	                " select psi.ID, pa.Año, i.Institucion, psi.total as Personal_total,pa.poblacion as poblacion_total from  personal_salud_institucion as psi"
+	                " left join instituciones as i on i.ID = psi.ID_institucion"
+                    " left join poblacion_total as pa on pa.Año = psi.Año; end")
+    except:
+        pass
+    #procedure para poblacion_afiliada
+    try:
+        cursor.execute( "create procedure sp_poblacion_afiliada() begin"
+                    " select pa.ID, e.Estado, pa.Año,pt.Poblacion, pa.Porcentaje as Procentaje_afiliado from poblacion_afiliada as pa"
+                    " left join estados as e on e.ID = pa.ID_Estado"
+                    " left join poblacion_total as pt on pa.Año = pt.Año; end")
+    except:
+        pass
+    #procedures para poblacion_derechohabiente
+    try:
+        cursor.execute( "create procedure sp_poblacion_derechohabiente() begin"
+                    " select pdh.ID,i.institucion,pdh.Año,pt.Poblacion as Poblacion_total,pdh.Porcentaje as Porcentaje_afiliado from poblacion_derechohabiente as pdh"
+                    " left join instituciones as i on i.ID = pdh.ID_institucion"
+                    " left join poblacion_total as pt on pdh.Año = pt.Año; end")
+    except:
+        pass
+    #procedure para poblacion__total
+    try:
+        cursor.execute( "create procedure sp_poblacion_total() begin"
+                    " select * from poblacion_total; end")
+    except:
+        pass
+    
+    
+    conexion.commit()
+    cursor.close()
+    conexion.close()
 def crear_tablas_webscraper(ps):
     
- 
     conexion =  crear_conexion(ps)
-    print(conexion)
-        
+  
     print("El programa se esta ejecutando, espere por favor")
     poblacion_derechohabiente = li.limpiar_poblacion_derechohabiente()
-    poblacion_derechohabiente.to_sql("poblacion_derechohabiente",conexion, if_exists =  "replace")
+    poblacion_derechohabiente.to_sql("poblacion_derechohabiente",conexion, if_exists =  "replace", dtype={"ID":INT,"ID_Institucion":INT,"Año":INT})
     
     poblacion_afiliada = li.limpiar_poblacion_afilada()
-    poblacion_afiliada.to_sql("poblacion_afiliada",conexion, if_exists =  "replace")
+    poblacion_afiliada.to_sql("poblacion_afiliada",conexion, if_exists =  "replace",dtype={"ID":INT,"ID_Estado":INT,"Año":INT})
     
     personal_salud_año = li.limpiar_personal_salud_año()
-    personal_salud_año.to_sql("personal_salud_año",conexion, if_exists =  "replace")
+    personal_salud_año.to_sql("personal_salud_año",conexion, if_exists =  "replace",dtype={"ID":INT,"ID_Estado":INT,"Año":INT})
     
     personal_salud_institucion =  li.limpiar_personal_salud_institucion()
-    personal_salud_institucion.to_sql("personal_salud_institucion",conexion, if_exists =  "replace")
+    personal_salud_institucion.to_sql("personal_salud_institucion",conexion, if_exists =  "replace",dtype={"ID":INT,"ID_Institucion":INT,"Año":INT})
     
     poblacion_total =  li.limpiar_poblacion()
-    poblacion_total.to_sql("poblacion_total",conexion, if_exists =  "replace")
-    print(poblacion_total)
-    
+    poblacion_total.to_sql("poblacion_total",conexion, if_exists =  "replace",dtype={"Año":INT})
+ 
     _,estados =  li.crear_estados()
-    estados.to_sql("estados",conexion, if_exists =  "replace")
+    estados.to_sql("estados",conexion, if_exists =  "replace", dtype={"ID":INT})
     
     _,instituciones =  li.crear_instituciones()
-    instituciones.to_sql("instituciones",conexion, if_exists =  "replace")
+    instituciones.to_sql("instituciones",conexion, if_exists =  "replace", dtype={"ID":INT})
     
     crear_llaves_primarias(ps)
     crear_relaciones(ps)
@@ -119,7 +165,7 @@ def crear_tablas_csv(ps):
     personal_salud_año.to_sql("personal_salud_año",conexion, if_exists =  "replace",dtype={"ID":INT,"ID_Estado":INT,"Año":INT})
     
     personal_salud_institucion =  pd.read_csv("datasets/personal_salud_institucion.csv",index_col="ID")
-    personal_salud_institucion.to_sql("personal_salud_institucion",conexion, if_exists =  "replace",dtype={"ID":INT,"ID_Institucion":INT})
+    personal_salud_institucion.to_sql("personal_salud_institucion",conexion, if_exists =  "replace",dtype={"ID":INT,"ID_Institucion":INT,"Año":INT})
     
     poblacion_total =  pd.read_csv("datasets/poblacion_total.csv",index_col="Año")
     poblacion_total.to_sql("poblacion_total",conexion, if_exists =  "replace",dtype={"Año":INT})
@@ -132,6 +178,7 @@ def crear_tablas_csv(ps):
     
     crear_llaves_primarias(ps)
     crear_relaciones(ps)
+    crear_procedures(ps)
     
     print("ya quedo")
     

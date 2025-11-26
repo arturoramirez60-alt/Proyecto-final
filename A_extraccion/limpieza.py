@@ -1,17 +1,17 @@
-import recoleccion as rec
+from  A_extraccion import recoleccion as rec
 import pandas as pd
 import pandas as  pd
 
 def crear_instituciones():
     instituciones_diccionario = {
         "IMSS": 1,
-        "IMSS BIENESTAR": 2,
+        "IMSS_BIENESTAR": 2,
         "ISSSTE": 3,
-        "INSABI O SEGURO POPULAR": 4,
-        "ISSSTE O ISSSTE ESTATAL": 5,
-        "INSTITUCIÓN PRIVADA": 6,
-        "PEMEX SDN O SM": 7,
-        "OTRA INSTITUCIÓN": 8,
+        "INSABI_O_SEGURO_POPULAR": 4,
+        "ISSSTE_O_ISSSTE_ESTATAL": 5,
+        "INSTITUCION_PRIVADA": 6,
+        "PEMEX_SDN_O_SM": 7,
+        "OTRA_INSTITUCION": 8,
         "DIF": 9,
         "ESTATALES": 10,
         "MUNICIPAL": 11,
@@ -20,19 +20,19 @@ def crear_instituciones():
         "SEDENA": 14,
         "SEMAR": 15,
         "UNIVERSITARIO": 16,
-        "CENTROS DE INTEGRACIÓN JUVENIL":17}
+        "CENTROS_DE_INTEGRACION_JUVENIL":17}
     
     instituciones = {
-    "ID": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+    "ID": [i for i in range(1,18)],
     "Institucion": [
         "IMSS",
-        "IMSS BIENESTAR",
+        "IMSS_BIENESTAR",
         "ISSSTE",
-        "INSABI O SEGURO POPULAR",
-        "ISSSTE O ISSSTE ESTATAL",
-        "INSTITUCIÓN PRIVADA",
-        "PEMEX SDN O SM",
-        "OTRA INSTITUCIÓN",
+        "INSABI_O_SEGURO_POPULAR",
+        "ISSSTE_O_ISSSTE_ESTATAL",
+        "INSTITUCION_PRIVADA",
+        "PEMEX_SDN_O_SM",
+        "OTRA_INSTITUCION",
         "DIF",
         "ESTATALES",
         "MUNICIPAL",
@@ -41,7 +41,7 @@ def crear_instituciones():
         "SEDENA",
         "SEMAR",
         "UNIVERSITARIO",
-        "CENTROS DE INTEGRACIÓN JUVENIL"
+        "CENTROS_DE_INTEGRACION_JUVENIL"
     ]}
 
     df_instituciones =  pd.DataFrame(instituciones)
@@ -50,22 +50,17 @@ def crear_instituciones():
 
 def crear_estados():
     estados = {
-    "ID": [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-        11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-        31, 32, 33
-    ],
+    "ID": [i for i in range(1,34)],
     "Estado": [
         "Aguascalientes",
-        "Baja California",
-        "Baja California Sur",
+        "Baja_California",
+        "Baja_California_Sur",
         "Campeche",
         "Chiapas",
         "Chihuahua",
         "Coahuila",
         "Colima",
-        "Ciudad de México",
+        "Ciudad_de_México",
         "Durango",
         "Guanajuato",
         "Guerrero",
@@ -75,12 +70,12 @@ def crear_estados():
         "Michoacán",
         "Morelos",
         "Nayarit",
-        "Nuevo León",
+        "Nuevo_León",
         "Oaxaca",
         "Puebla",
         "Querétaro",
-        "Quintana Roo",
-        "San Luis Potosí",
+        "Quintana_Roo",
+        "San_Luis_Potosí",
         "Sinaloa",
         "Sonora",
         "Tabasco",
@@ -94,14 +89,14 @@ def crear_estados():
     
     estados_diccionario = {
     "AGUASCALIENTES": 1,
-    "BAJA CALIFORNIA": 2,
-    "BAJA CALIFORNIA SUR": 3,
+    "BAJA_CALIFORNIA": 2,
+    "BAJA_CALIFORNIA_SUR": 3,
     "CAMPECHE": 4,
     "CHIAPAS": 5,
     "CHIHUAHUA": 6,
     "COAHUILA": 7,
     "COLIMA": 8,
-    "CIUDAD DE MÉXICO": 9,
+    "CIUDAD_DE_MÉXICO": 9,
     "DURANGO": 10,
     "GUANAJUATO": 11,
     "GUERRERO": 12,
@@ -111,12 +106,12 @@ def crear_estados():
     "MICHOACÁN": 16,
     "MORELOS": 17,
     "NAYARIT": 18,
-    "NUEVO LEÓN": 19,
+    "NUEVO_LEÓN": 19,
     "OAXACA": 20,
     "PUEBLA": 21,
     "QUERÉTARO": 22,
-    "QUINTANA ROO": 23,
-    "SAN LUIS POTOSÍ": 24,
+    "QUINTANA_ROO": 23,
+    "SAN_LUIS_POTOSÍ": 24,
     "SINALOA": 25,
     "SONORA": 26,
     "TABASCO": 27,
@@ -136,6 +131,7 @@ def limpiar_columnas(df:pd.DataFrame):
     cols =  df.columns
     for col in cols:
         df[col] = df[col].astype("str")
+        df[col] = df[col].str.replace(",","")
         df[col] = df[col].str.replace("\n","")
     return df
 
@@ -188,7 +184,7 @@ def limpiar_poblacion_afilada():
     
 def limpiar_personal_salud_año():
     
-    df = rec.medicos_por_año()
+    df = rec.personal_por_año()
     limpiar_columnas(df)
     df["ID_Estado"] = df.Estado
     df.drop(columns="Estado",inplace=True)
@@ -198,7 +194,7 @@ def limpiar_personal_salud_año():
 
 def limpiar_personal_salud_institucion():
     
-    df =  rec.medicos_por_institucion()
+    df =  rec.personal_por_institucion()
     limpiar_columnas(df)
     df["ID_Institucion"] = df.institucion
     df.ID_Institucion = df.ID_Institucion.str.upper()
@@ -209,6 +205,7 @@ def limpiar_personal_salud_institucion():
     return df
     
 def limpiar_poblacion():
+
     df_temp = rec.poblacion()
     df_temp.Año = df_temp.Año.astype("int")
     data = {"Año":[i for i in range(1910,2026)]}
@@ -216,6 +213,7 @@ def limpiar_poblacion():
     df = df.merge(df_temp, on="Año", how="left")
     df.ffill(inplace=True)
     df.set_index("Año",inplace= True)
+    limpiar_columnas(df)
     return df
     
      

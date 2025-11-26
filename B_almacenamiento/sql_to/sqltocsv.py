@@ -43,7 +43,7 @@ def sqltocsv():
             df.set_index("ID", inplace=True)
         except:
             df.set_index("Año", inplace=True)
-        df.to_csv(f"datasets/{tabla[0]}.csv")
+        df.to_csv(f"B_almacenamiento/datasets/{tabla[0]}.csv")
     cursor.close() 
     conexion.close()
     

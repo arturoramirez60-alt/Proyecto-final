@@ -1,13 +1,13 @@
 ID,Estado
 1,Aguascalientes
-2,Baja California
-3,Baja California Sur
+2,Baja_California
+3,Baja_California_Sur
 4,Campeche
 5,Chiapas
 6,Chihuahua
 7,Coahuila
 8,Colima
-9,Ciudad de México
+9,Ciudad_de_México
 10,Durango
 11,Guanajuato
 12,Guerrero
@@ -17,12 +17,12 @@ ID,Estado
 16,Michoacán
 17,Morelos
 18,Nayarit
-19,Nuevo León
+19,Nuevo_León
 20,Oaxaca
 21,Puebla
 22,Querétaro
-23,Quintana Roo
-24,San Luis Potosí
+23,Quintana_Roo
+24,San_Luis_Potosí
 25,Sinaloa
 26,Sonora
 27,Tabasco

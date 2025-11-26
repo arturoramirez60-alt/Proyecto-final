@@ -81,36 +81,35 @@ def navegar(navegador:webdriver.Chrome):
     navegador.execute_script("location.reload();")
     
     time.sleep(3)
-    wait = WebDriverWait(navegador, 5)
-    elemento = wait.until(EC.element_to_be_clickable((By.XPATH, "//a[@class='text-white' and contains(., 'Recursos en salud')]")))
+    elemento = navegador.find_element(By.XPATH, "//a[@class='text-white' and contains(., 'Recursos en salud')]")
     elemento.click()
+    time.sleep(3)
     
-    wait = WebDriverWait(navegador, 5)
+    wait = WebDriverWait(navegador, 20)
     personal = wait.until(EC.element_to_be_clickable((By.XPATH, "//a[@class='list-group-item btn_desktop mb-0 pl-4 p-1 truncado' and contains(., 'Personal de salud')]")))
-    personal.click()   
-    time.sleep(3) 
+    personal.click()  
+    time.sleep(3)
     try:
         alerta = navegador.switch_to.alert
-        print(f"Alerta después del segundo click: {alerta.text}")
         alerta.accept()
         time.sleep(3)
     except NoAlertPresentException:
         pass
      
-def medicos_por_año():
+def personal_por_año():
     columnas_df = [ "Año",
-           "Medicos generales, especialistas y odontologos",
-           "Personal medico en formacion",
-           "Medicos en otras labores",
-           "Enfermeras generales y especialistas",
-           "Pasantes de enfermeria",
-           "Auxiliares de enfermeria",
-           "Personal de enfermeria en otras labores",
-           "Personal profesional",
-           "Personal tecnico",
-           "Otro personal",
-           "TOTAL",
-           "Estado"]
+        "Medicos_generales_especialistas_y_odontologos",
+        "Personal_medico_en_formacion",
+        "Medicos_en_otras_labores",
+        "Enfermeras_generales_y_especialistas",
+        "Pasantes_de_enfermeria",
+        "Auxiliares_de_enfermeria",
+        "Personal_de_enfermeria_en_otras_labores",
+        "Personal_profesional",
+        "Personal_tecnico",
+        "Otro_personal",
+        "TOTAL",
+        "Estado"]
     filas_df = []
     
     navegador = abrir_navegador()
@@ -118,14 +117,15 @@ def medicos_por_año():
     
     navegar(navegador)
     
-    time.sleep(2)
-    wait = WebDriverWait(navegador, 5)
+    
+    wait = WebDriverWait(navegador, 20)
     tabla = wait.until(EC.element_to_be_clickable((By.ID, "tabla20-tab")))
     tabla.click()
-    wait = WebDriverWait(navegador, 5)
+    time.sleep(3)
+    wait = WebDriverWait(navegador, 20)
     elemento = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "filter-option-inner-inner")))
     elemento.click()
-    time.sleep(2)
+    time.sleep(3)
     
     html = contenido(navegador.page_source)
     estados = html.find_all("option")
@@ -135,10 +135,9 @@ def medicos_por_año():
     for estado in estados:
         navegador.execute_script("document.body.style.zoom='50%'")
         
-        wait = WebDriverWait(navegador, 5)
-        i = wait.until(EC.element_to_be_clickable((By.XPATH, f"//span[text()='{estado}']")))
-        i.click()
-        
+        wait = WebDriverWait(navegador, 20)
+        opc = wait.until(EC.element_to_be_clickable((By.XPATH, f"//span[text()='{estado}']")))
+        opc.click()
         time.sleep(3)
         elemento.click()
         
@@ -146,11 +145,10 @@ def medicos_por_año():
         tabla = html.find("table",attrs={"class":"table table-sm table-bordered table-hover"})
         filas = tabla.find_all("tr")
         
-        
         for fila in filas[1:]:
             columnas = fila.find_all("td")
             fila_temp = []
-            
+    
             for columna in columnas:
                 fila_temp.append(columna.text)
             fila_temp.append(estado)
@@ -161,7 +159,7 @@ def medicos_por_año():
     df = pd.DataFrame(filas_df, columns= columnas_df)
     return df
 
-def medicos_por_institucion():
+def personal_por_institucion():
     
     data = {"institucion":[],
             "total":[],
@@ -178,21 +176,26 @@ def medicos_por_institucion():
     time.sleep(3)
     tabla = navegador.find_element(By.ID, "tabla22-tab")
     tabla.click()
-    boton = navegador.find_element(By.CSS_SELECTOR, "button[data-id='personalDeSalud_InstitucionAnio_anio']")
-    boton.click()
-    opcion_2020 = navegador.find_element(By.XPATH, "//span[contains(text(), '2020')]")
-    opcion_2020.click()
     time.sleep(3)
-    html = contenido(navegador.page_source)
-    tabla = html.find_all("table", attrs={"class":"table table-sm table-bordered table-hover"})
-    filas = tabla[2].find_all("tr")
-    time.sleep(3)
-    for fila in filas[1:]:
+    
+    
+    for año in range(2012,2024):
+        boton = navegador.find_element(By.CSS_SELECTOR, "button[data-id='personalDeSalud_InstitucionAnio_anio']")
+        boton.click()
+        año_opc = navegador.find_element(By.XPATH, f"//span[contains(text(), '{año}')]")
+        año_opc.click()
+        time.sleep(3)
+        html = contenido(navegador.page_source)
+        tabla = html.find_all("table", attrs={"class":"table table-sm table-bordered table-hover"})
+        filas = tabla[2].find_all("tr")
+        time.sleep(3)
         
-        columnas = fila.find_all("td")
-        data["institucion"].append(columnas[0].text)
-        data["total"].append(columnas[11].text)
-        data["Año"].append(2020)
+        for fila in filas[1:]:
+            
+            columnas = fila.find_all("td")
+            data["institucion"].append(columnas[0].text)
+            data["total"].append(columnas[11].text)
+            data["Año"].append(año)
         
     navegador.close()
     df =  pd.DataFrame(data)

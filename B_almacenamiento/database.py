@@ -90,9 +90,8 @@ def crear_procedures(ps,user):
 
     #procedure para poblacion_afiliada
     cursor.execute( "create procedure sp_poblacion_afiliada() begin"
-                    " select pa.ID, e.Estado, pa.Año,pt.Poblacion, pa.Porcentaje as Procentaje_afiliado from poblacion_afiliada as pa"
-                    " left join estados as e on e.ID = pa.ID_Estado"
-                    " left join poblacion_total as pt on pa.Año = pt.Año; end")
+                    " select pa.ID, e.Estado, pa.Porcentaje as Porcentaje_afiliado from poblacion_afiliada as pa"
+                    " left join estados as e on e.ID = pa.ID_Estado; end")
 
     #procedures para poblacion_derechohabiente
     cursor.execute( "create procedure sp_poblacion_derechohabiente() begin"

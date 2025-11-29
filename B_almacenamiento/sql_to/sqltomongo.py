@@ -1,5 +1,6 @@
 from mysql.connector import connect
 from pymongo import MongoClient
+import datetime
 
 def conectar(db):
     return connect(host="localhost",
@@ -12,6 +13,12 @@ def conectar_mongodb(db):
     mongo_conexion = cliente[db]
     return mongo_conexion
 
+def limpiar_documento(documento):
+    for clave, valor in documento.items():
+        if isinstance(valor, datetime.date) and not isinstance(valor, datetime.datetime):
+            documento[clave] = datetime.datetime.combine(valor, datetime.time.min)
+    return documento
+    
 def migrar(db):
     sql_conexion = conectar(db)
     mongo_conexion = conectar_mongodb(db)
@@ -23,8 +30,12 @@ def migrar(db):
     for tabla in tablas:
         tabla = list(tabla.values())[0]
         cursor.execute(f"SELECT * FROM {tabla}")
-        documentos = cursor.fetchall()
-        mongo_conexion[tabla].insert_many(documentos)
+        documentos_sql = cursor.fetchall()
+        documentos_mongo = [limpiar_documento(doc) for doc in documentos_sql]
+        mongo_conexion[tabla].drop()
+        mongo_conexion[tabla].insert_many(documentos_mongo)
+         
+        
     cursor.close()
     sql_conexion.close()
     mongo_conexion.client.close()

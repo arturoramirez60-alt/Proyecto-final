@@ -5,13 +5,13 @@ import pandas as  pd
 def crear_instituciones():
     instituciones_diccionario = {
         "IMSS": 1,
-        "IMSS_BIENESTAR": 2,
+        "IMSS BIENESTAR": 2,
         "ISSSTE": 3,
-        "INSABI_O_SEGURO_POPULAR": 4,
-        "ISSSTE_O_ISSSTE_ESTATAL": 5,
-        "INSTITUCION_PRIVADA": 6,
-        "PEMEX_SDN_O_SM": 7,
-        "OTRA_INSTITUCION": 8,
+        "INSABI O SEGURO POPULAR": 4,
+        "ISSSTE O ISSSTE ESTATAL": 5,
+        "INSTITUCIÓN PRIVADA": 6,
+        "PEMEX SDN O SM": 7,
+        "OTRA INSTITUCIÓN": 8,
         "DIF": 9,
         "ESTATALES": 10,
         "MUNICIPAL": 11,
@@ -20,7 +20,7 @@ def crear_instituciones():
         "SEDENA": 14,
         "SEMAR": 15,
         "UNIVERSITARIO": 16,
-        "CENTROS_DE_INTEGRACION_JUVENIL":17}
+        "CENTROS DE INTEGRACIÓN JUVENIL":17}
     
     instituciones = {
     "ID": [i for i in range(1,18)],
@@ -89,14 +89,14 @@ def crear_estados():
     
     estados_diccionario = {
     "AGUASCALIENTES": 1,
-    "BAJA_CALIFORNIA": 2,
-    "BAJA_CALIFORNIA_SUR": 3,
+    "BAJA CALIFORNIA": 2,
+    "BAJA CALIFORNIA SUR": 3,
     "CAMPECHE": 4,
     "CHIAPAS": 5,
     "CHIHUAHUA": 6,
     "COAHUILA": 7,
     "COLIMA": 8,
-    "CIUDAD_DE_MÉXICO": 9,
+    "CIUDAD DE MÉXICO": 9,
     "DURANGO": 10,
     "GUANAJUATO": 11,
     "GUERRERO": 12,
@@ -106,12 +106,12 @@ def crear_estados():
     "MICHOACÁN": 16,
     "MORELOS": 17,
     "NAYARIT": 18,
-    "NUEVO_LEÓN": 19,
+    "NUEVO LEÓN": 19,
     "OAXACA": 20,
     "PUEBLA": 21,
     "QUERÉTARO": 22,
-    "QUINTANA_ROO": 23,
-    "SAN_LUIS_POTOSÍ": 24,
+    "QUINTANA ROO": 23,
+    "SAN LUIS POTOSÍ": 24,
     "SINALOA": 25,
     "SONORA": 26,
     "TABASCO": 27,
@@ -161,6 +161,8 @@ def limpiar_poblacion_derechohabiente():
     df["ID_Institucion"] = df.indicador
     df.ID_Institucion = df.ID_Institucion.str.upper()
     df.drop(columns= "indicador", inplace= True)
+    df.Porcentaje = df.Porcentaje.astype("float")
+    df.Porcentaje = round(df.Porcentaje/100,2)
     mapear_instituciones(df)
     crear_indice(df)
     df = df[["ID_Institucion","Porcentaje","Año"]]
@@ -177,9 +179,12 @@ def limpiar_poblacion_afilada():
     df.ID_Estado = df.ID_Estado.str.replace("Veracruz de Ignacio de la Llave","VERACRUZ")
     df.ID_Estado = df.ID_Estado.str.replace("Michoacán de Ocampo","MICHOACÁN")
     df.ID_Estado = df.ID_Estado.str.upper()
+    df.Porcentaje = df.Porcentaje.astype("float")
+    df.Porcentaje = round(df.Porcentaje/100,2)
     mapear_estados(df)
     crear_indice(df)
     df = df[["ID_Estado","Porcentaje","Año"]]
+
     return df
     
 def limpiar_personal_salud_año():

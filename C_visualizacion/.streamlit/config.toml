@@ -1,0 +1,47 @@
+# Archivo para cambiar apariencia de los dashboards.
+# Es como crear tu propio tema. Pero solo pueden cambiar los parametros de abajo. Son apariencias generales.
+
+# primaryColor — Color principal del tema.
+# Se usa en botones, sliders, switches, controles activos y acentos visuales.
+# Es el "color de la marca" o un color institucional.
+
+# backgroundColor — Color del fondo general de la aplicación.
+# Donde se dibujan las columnas, gráficos y la mayor parte del contenido.
+# Usualmente es blanco (#FFFFFF) para dashboards tipo Power BI o estilo corporativo.
+
+# secondaryBackgroundColor — Fondo de los elementos secundarios:
+# contenedores (st.container), expanders, sidebars y secciones internas.
+# Sirve para dar contraste suave con el fondo principal.
+
+# textColor — Color del texto general de la interfaz.
+# Asegúrate de que contraste suficiente con el backgroundColor.
+# Un gris muy oscuro (#1A1A1A) suele ser más cómodo que negro puro (#000000).
+
+# font — Fuente del texto.
+# Opciones válidas: "sans serif", "serif", "monospace".
+# - sans serif: más moderno, estilo dashboards
+# - serif: estilo académico o formal
+# - monospace: para apps muy técnicas o mostrar código
+
+[theme]
+
+# Tema morado
+#primaryColor = "#F8B179"         
+#backgroundColor = "#2d3250"       
+#secondaryBackgroundColor = "#161D30"  
+#textColor = "#FFFFFF"             
+#font = "sans serif"
+
+# Tema morado
+#primaryColor = "#1AAE99"         
+#backgroundColor = "#DEF1EB"       
+#secondaryBackgroundColor = "#2E6F59"  
+#textColor = "#000000"             
+#font = "sans serif"
+
+# Tema obscuro con Morado
+primaryColor="#6F2DBD"             # Morado profundo científico
+backgroundColor="#0A0A10"          # Negro violeta
+secondaryBackgroundColor="#161622" # Paneles oscuros para contraste
+textColor="#E0E0E7"                # Gris claro violeta
+font="sans serif"

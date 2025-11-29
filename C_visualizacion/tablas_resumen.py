@@ -27,3 +27,31 @@ class TablasResumen:
             self.personal_salud_institucion = pd.DataFrame(result.fetchall())
         cursor.close()
         conexion.close()
+        
+    def Poblacion_afiliada(self):
+        
+        pa_pie = self.poblacion_afiliada
+        pa_pie["Porcentaje_no_afiliado"] = 1 - pa_pie.Porcentaje_afiliado
+        pa_pie["Porcentaje_total"] = 1 
+        self.pa_pie = pd.melt(pa_pie, id_vars = ["Estado"], 
+                value_vars = ["Porcentaje_afiliado","Porcentaje_no_afiliado"], 
+                var_name= "porcentajes",
+                value_name= "cantidad")
+        
+    def Personal_salud_año(self):
+        psa_resumido =  self.personal_salud_año[["Año","Estado","TOTAL","Poblacion_total"]]
+        
+        
+        self.psa_bar =  pd.melt(psa_resumido, id_vars= ["Año","Estado"], 
+                                value_vars= ["TOTAL","Poblacion_total"],
+                                var_name= "Poblacion",
+                                value_name= "Total")
+        
+        self.psa_bar.Poblacion[self.psa_bar.Poblacion == "TOTAL"] = "Personal_medico"
+        
+    def Poblacion_derechohabiente(self):
+        
+        pd_bar =  self.poblacion_derechohabiente
+        pd_bar["Poblacion_afiliada"] = pd_bar.Poblacion_total * pd_bar.Porcentaje_afiliado
+        pd_bar.Poblacion_afiliada = round(pd_bar.Poblacion_afiliada,0)
+        self.pd_bar = pd_bar[["institucion","Poblacion_afiliada"]]

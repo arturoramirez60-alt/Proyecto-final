@@ -1,4 +1,4 @@
-ID,Año,"Medicos_generales_especialistas_y_odontologos",Personal_medico_en_formacion,Medicos_en_otras_labores,Enfermeras_generales_y_especialistas,Pasantes_de_enfermeria,Auxiliares_de_enfermeria,Personal_de_enfermeria_en_otras_labores,Personal_profesional,Personal_tecnico,Otro_personal,TOTAL,ID_Estado
+ID,Año,Medicos_generales_especialistas_y_odontologos,Personal_medico_en_formacion,Medicos_en_otras_labores,Enfermeras_generales_y_especialistas,Pasantes_de_enfermeria,Auxiliares_de_enfermeria,Personal_de_enfermeria_en_otras_labores,Personal_profesional,Personal_tecnico,Otro_personal,TOTAL,ID_Estado
 1,2012,146322,40172,17201,154269,14728,90825,17116,57394,65999,202756,806782,33
 2,2013,152423,42294,17668,160539,16973,93128,17167,59194,68828,206070,834284,33
 3,2014,159364,45417,18142,166266,19091,97048,18606,62075,70694,216192,872895,33

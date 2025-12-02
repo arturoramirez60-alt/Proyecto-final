@@ -34,6 +34,7 @@ class TablasResumen:
         pa_pie = self.poblacion_afiliada
         pa_pie["Porcentaje_no_afiliado"] = 1 - pa_pie.Porcentaje_afiliado
         pa_pie["Porcentaje_total"] = 1 
+        
         self.pa_pie = pd.melt(pa_pie, id_vars = ["Estado"], 
                 value_vars = ["Porcentaje_afiliado","Porcentaje_no_afiliado"], 
                 var_name= "porcentajes",
@@ -79,10 +80,18 @@ class TablasResumen:
         pd_bar["Poblacion_afiliada"] = pd_bar.Poblacion_total * pd_bar.Porcentaje_afiliado
         pd_bar.Poblacion_afiliada = round(pd_bar.Poblacion_afiliada,0)
         
-        self.pd_bar = pd_bar[["institucion","Poblacion_afiliada","Porcentaje_afiliado"]]
+        self.pd_bar = pd_bar[["Institucion","Poblacion_afiliada","Porcentaje_afiliado"]]
     
     def Personal_salud_institucion(self):
         
         self.psi_treemap =  self.personal_salud_institucion[["Año","Institucion","Personal_total"]]
+        
+        psi_scatter =  self.personal_salud_institucion[["Institucion","Personal_total"]][self.personal_salud_institucion.Año == 2020]
+   
+        pd_scatter =  self.poblacion_derechohabiente
+        pd_scatter["Poblacion_afiliada"] = pd_scatter.Poblacion_total * pd_scatter.Porcentaje_afiliado
+        pd_scatter =  self.poblacion_derechohabiente[["Institucion","Poblacion_afiliada"]]
+        
+        self.psi_pd_scatter = pd.merge(psi_scatter,pd_scatter, how= "inner", on="Institucion")
         
         

@@ -101,7 +101,7 @@ def crear_procedures(ps,user):
 
     #procedures para poblacion_derechohabiente
     cursor.execute( "create procedure sp_poblacion_derechohabiente() begin"
-                    " select pdh.ID,i.institucion,pdh.Año,pt.Poblacion as Poblacion_total,pdh.Porcentaje as Porcentaje_afiliado from poblacion_derechohabiente as pdh"
+                    " select pdh.ID,i.institucion as Institucion ,pdh.Año,pt.Poblacion as Poblacion_total,pdh.Porcentaje as Porcentaje_afiliado from poblacion_derechohabiente as pdh"
                     " left join instituciones as i on i.ID = pdh.ID_institucion"
                     " left join poblacion_total as pt on pdh.Año = pt.Año; end")
 
@@ -151,11 +151,12 @@ def crear_tablas_webscraper(ps,user):
     _,instituciones =  li.crear_instituciones()
     
     crear_tablas_sql(ps,user,poblacion_afiliada,poblacion_derechohabiente,personal_salud_año,personal_salud_institucion,poblacion_total,estados,instituciones)
-
-    crear_llaves_primarias(ps,user)
-    crear_relaciones(ps,user)
-    crear_procedures(ps,user)
-
+    try:
+        crear_llaves_primarias(ps,user)
+        crear_relaciones(ps,user)
+        crear_procedures(ps,user)
+    except:
+        pass
     print("ya quedo")
     
 def crear_tablas_csv(ps,user):
@@ -169,10 +170,12 @@ def crear_tablas_csv(ps,user):
     instituciones =  pd.read_csv(f"{ruta_relativa}/instituciones.csv",index_col="ID")
 
     crear_tablas_sql(ps,user,poblacion_afiliada,poblacion_derechohabiente,personal_salud_año,personal_salud_institucion,poblacion_total,estados,instituciones)
-   
-    crear_llaves_primarias(ps,user)
-    crear_relaciones(ps,user)
-    crear_procedures(ps,user)
+    try:
+        crear_llaves_primarias(ps,user)
+        crear_relaciones(ps,user)
+        crear_procedures(ps,user)
+    except:
+        pass
 
     print("ya quedo")
     

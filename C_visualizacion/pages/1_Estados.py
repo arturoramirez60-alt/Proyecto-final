@@ -24,27 +24,40 @@ def dashboard(tablas):
     st.plotly_chart(plot)
     
     
-    tablas.Poblacion_afiliada()
-    pa_pie = tablas.pa_pie #poblacion afiliada ajustada para grafica de pastel
+
+    pa_pie = tablas.pa_pie
     
     col1, col2 = st.columns(2) 
     pie = px.pie(
         pa_pie[pa_pie.Estado == estado],
         values='cantidad',  
         names="porcentajes",    
-        title=f'Distribución de Afiliación en {estado}',
+        title=f'Distribución de Afiliación en {estado} para 2020',
         color_discrete_sequence=px.colors.sequential.Aggrnyl
     )
 
     st.plotly_chart(pie)
     
+
+    
+    st.header("Total de personal por estado y año")
+    
+    psa_treemap = tablas.psa_treemap
+    años = psa_treemap.Año.unique()
+    año = st.select_slider("seleccione un año", años)
+    treemap =  px.treemap(psa_treemap[(psa_treemap.Estado ==  estado) & (psa_treemap.Año == año)],
+                          path = ["Tipo_personal"],
+                          values= "Total",
+                          color_discrete_sequence=px.colors.sequential.Aggrnyl)
+
+    st.plotly_chart(treemap)
  
-    
-    
-  
 
-if __name__ == "__main__":
-    if "tablas" not in st.session_state:
-        st.session_state.tablas = TablasResumen()
 
-    dashboard(st.session_state.tablas)
+if "tablas" not in st.session_state:
+    st.session_state.tablas = TablasResumen()
+    st.session_state.tablas.Personal_salud_año()
+    st.session_state.tablas.Personal_salud_institucion()
+    st.session_state.tablas.Poblacion_derechohabiente()
+    st.session_state.tablas.Poblacion_afiliada()
+dashboard(st.session_state.tablas)

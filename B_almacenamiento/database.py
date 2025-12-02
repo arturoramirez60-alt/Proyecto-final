@@ -5,6 +5,7 @@ import pandas as pd
 from enum import Enum
 import pandas as  pd
 from mysql.connector import connect, Error
+import json
 
 class DataDB(Enum):
     NAME_BD = "recursos_en_salud"
@@ -20,16 +21,21 @@ def crear_conexion(ps,user):
     return create_engine(cadena_conexion).connect()
 
 def conectar_mysql(ps,user):
-    try:
-        conexion = connect(
+
+    conexion = connect(
             host= DataDB.SERVER.value,
             user= user,
             password= ps,
-            database= DataDB.NAME_BD.value
-        )
-        return conexion
-    except Error as e:
-        print(e)
+            database= DataDB.NAME_BD.value)
+    return conexion
+    
+def read_json():
+    with open("_Archivos/conexion.json", "r") as archivo:
+        datos = dict(json.loads(archivo.read()))
+    user = datos["user"]
+    ps = datos["password"]
+    return ps,user
+     
         
 def crear_llaves_primarias(ps,user):
     
@@ -145,13 +151,11 @@ def crear_tablas_webscraper(ps,user):
     _,instituciones =  li.crear_instituciones()
     
     crear_tablas_sql(ps,user,poblacion_afiliada,poblacion_derechohabiente,personal_salud_año,personal_salud_institucion,poblacion_total,estados,instituciones)
-    try:
-        crear_llaves_primarias(ps,user)
-        crear_relaciones(ps,user)
-        crear_procedures(ps,user)
-    except:
-        pass
-    
+
+    crear_llaves_primarias(ps,user)
+    crear_relaciones(ps,user)
+    crear_procedures(ps,user)
+
     print("ya quedo")
     
 def crear_tablas_csv(ps,user):
@@ -165,13 +169,11 @@ def crear_tablas_csv(ps,user):
     instituciones =  pd.read_csv(f"{ruta_relativa}/instituciones.csv",index_col="ID")
 
     crear_tablas_sql(ps,user,poblacion_afiliada,poblacion_derechohabiente,personal_salud_año,personal_salud_institucion,poblacion_total,estados,instituciones)
-    try:
-        crear_llaves_primarias(ps,user)
-        crear_relaciones(ps,user)
-        crear_procedures(ps,user)
-    except:
-        pass
-    
+   
+    crear_llaves_primarias(ps,user)
+    crear_relaciones(ps,user)
+    crear_procedures(ps,user)
+
     print("ya quedo")
     
 

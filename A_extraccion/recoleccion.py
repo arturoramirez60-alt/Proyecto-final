@@ -230,7 +230,6 @@ def poblacion():
     return df
 
 
-
     
     
     

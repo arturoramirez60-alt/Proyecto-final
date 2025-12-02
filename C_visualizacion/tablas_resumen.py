@@ -1,12 +1,13 @@
 import pandas as pd
 from sqlalchemy import create_engine
-from B_almacenamiento.database import conectar_mysql, DataDB
+from B_almacenamiento.database import conectar_mysql, DataDB, read_json
 import pandas as pd
+import json
+
 
 class TablasResumen:
     def __init__(self):
-        ps = input("Ingrese la contraseña de su servidor mysql: ") 
-        user = input("Ingrese su nombre de usuario de mysql: ")
+        ps,user = read_json()
         conexion = conectar_mysql(ps,user)
         cursor = conexion.cursor(dictionary=True)
         
@@ -40,18 +41,48 @@ class TablasResumen:
         
     def Personal_salud_año(self):
         psa_resumido =  self.personal_salud_año[["Año","Estado","TOTAL","Poblacion_total"]]
+        renombre = {
+            'TOTAL': 'Personal_medico'}
+        psa_resumido.rename(columns=renombre, inplace=True)
         
         
-        self.psa_bar =  pd.melt(psa_resumido, id_vars= ["Año","Estado"], 
-                                value_vars= ["TOTAL","Poblacion_total"],
+        psa_bar =  pd.melt(psa_resumido, id_vars= ["Año","Estado"], 
+                                value_vars= ["Personal_medico","Poblacion_total"],
                                 var_name= "Poblacion",
                                 value_name= "Total")
+        self.psa_bar =  psa_bar
         
-        self.psa_bar.Poblacion[self.psa_bar.Poblacion == "TOTAL"] = "Personal_medico"
+        psa_treemap =  self.personal_salud_año.drop(columns= "TOTAL")
+        columnas = psa_treemap.columns[2:12]
+        self.psa_treemap =  pd.melt(psa_treemap, id_vars=["Año","Estado"],
+                                    value_vars= columnas,
+                                    var_name= "Tipo_personal",
+                                    value_name= "Total")
+        
+        
+        self.psa_area =  psa_resumido[psa_resumido.Estado == "Nacional"] 
+        
+        self.psa_scatter = self.personal_salud_año[self.personal_salud_año.Estado != "Nacional"]
+       
+        psa_histogram =  self.personal_salud_año
+        psa_histogram.drop(columns= "Poblacion_total", inplace= True)
+        psa_histogram = psa_histogram[psa_histogram.Estado != 'Nacional']
+        
+        columnas =  psa_histogram.columns.to_list()[2:13]
+        self.psa_histogram =  pd.melt(psa_histogram, id_vars= ["Año", "Estado"], value_vars= columnas, var_name= "Tipo_personal", value_name= "Total" )
+        self.psa_histogram.Tipo_personal = self.psa_histogram.Tipo_personal.str.replace("TOTAL","Personal_total")
+        
         
     def Poblacion_derechohabiente(self):
         
         pd_bar =  self.poblacion_derechohabiente
         pd_bar["Poblacion_afiliada"] = pd_bar.Poblacion_total * pd_bar.Porcentaje_afiliado
         pd_bar.Poblacion_afiliada = round(pd_bar.Poblacion_afiliada,0)
-        self.pd_bar = pd_bar[["institucion","Poblacion_afiliada"]]
+        
+        self.pd_bar = pd_bar[["institucion","Poblacion_afiliada","Porcentaje_afiliado"]]
+    
+    def Personal_salud_institucion(self):
+        
+        self.psi_treemap =  self.personal_salud_institucion[["Año","Institucion","Personal_total"]]
+        
+        

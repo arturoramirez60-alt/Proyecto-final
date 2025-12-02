@@ -8,30 +8,26 @@ def crear_instituciones():
         "IMSS BIENESTAR": 2,
         "ISSSTE": 3,
         "INSABI O SEGURO POPULAR": 4,
-        "ISSSTE O ISSSTE ESTATAL": 5,
-        "INSTITUCIÓN PRIVADA": 6,
-        "PEMEX SDN O SM": 7,
-        "OTRA INSTITUCIÓN": 8,
-        "DIF": 9,
-        "ESTATALES": 10,
-        "MUNICIPAL": 11,
-        "PEMEX": 12,
-        "SALUD": 13,
-        "SEDENA": 14,
-        "SEMAR": 15,
-        "UNIVERSITARIO": 16,
-        "CENTROS DE INTEGRACIÓN JUVENIL":17}
+        "INSTITUCIÓN PRIVADA": 5,
+        "OTRA INSTITUCIÓN": 6,
+        "DIF": 7,
+        "ESTATALES": 8,
+        "MUNICIPAL": 9,
+        "PEMEX": 10,
+        "SALUD": 11,
+        "SEDENA": 12,
+        "SEMAR": 13,
+        "UNIVERSITARIO": 14,
+        "CENTROS DE INTEGRACIÓN JUVENIL":15}
     
     instituciones = {
-    "ID": [i for i in range(1,18)],
+    "ID": [i for i in range(1,16)],
     "Institucion": [
         "IMSS",
         "IMSS_BIENESTAR",
         "ISSSTE",
         "INSABI_O_SEGURO_POPULAR",
-        "ISSSTE_O_ISSSTE_ESTATAL",
         "INSTITUCION_PRIVADA",
-        "PEMEX_SDN_O_SM",
         "OTRA_INSTITUCION",
         "DIF",
         "ESTATALES",
@@ -159,6 +155,11 @@ def limpiar_poblacion_derechohabiente():
     df, _ = rec.derechohabiancia() 
     limpiar_columnas(df)
     df["ID_Institucion"] = df.indicador
+    
+    df.ID_Institucion = df.ID_Institucion.str.replace("PEMEX SDN o SM","PEMEX")
+    df.ID_Institucion = df.ID_Institucion.str.replace("ISSSTE o ISSSTE estatal","ISSSTE")
+    print(df)
+    
     df.ID_Institucion = df.ID_Institucion.str.upper()
     df.drop(columns= "indicador", inplace= True)
     df.Porcentaje = df.Porcentaje.astype("float")

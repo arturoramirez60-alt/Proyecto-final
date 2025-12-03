@@ -1,7 +1,6 @@
 import streamlit as st
 from tablas_resumen import TablasResumen
 
-
 st.set_page_config(
     page_title="Dashboard Global",
     layout="wide",
@@ -12,11 +11,15 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-body {
-    background: white !important;
-    color: black !important;
+html, body, [class*="css"]  {
+    color: white !important;
 }
 
+body {
+    background-color: #0e1117 !important;
+}
+
+/* ENCABEZADO */
 .hero {
     text-align: center;
     padding: 40px 0px 10px 0px;
@@ -25,45 +28,52 @@ body {
 .hero-title {
     font-size: 55px;
     font-weight: 900;
-    color: #000000;
+    color: white;
     letter-spacing: -1px;
 }
 
 .hero-subtitle {
     font-size: 20px;
-    color: #444444;
+    color: #d0d0d0;
     margin-top: -10px;
 }
 
+/* TARJETAS */
 .card {
-    background: #ffffff;
+    background: #f4f6f9;
     padding: 28px;
     border-radius: 18px;
     text-align: center;
-    border: 1px solid #e3e9f0;
-    box-shadow: 0px 4px 18px rgba(0,0,0,0.08);
+    border: 1px solid #cfd4dd;
+    box-shadow: 0px 4px 14px rgba(0,0,0,0.15);
     transition: 0.3s;
 }
 
 .card:hover {
     transform: translateY(-6px);
-    box-shadow: 0px 10px 25px rgba(0,0,0,0.12);
+    box-shadow: 0px 12px 28px rgba(0,0,0,0.25);
 }
 
 .card-title {
     font-size: 18px;
     font-weight: 700;
-    color: #000000;
+    color: #000000; 
 }
 
+.card p {
+    color: #333333 !important;
+}
+
+/* FOOTER */
 .footer {
     margin-top: 50px;
     text-align: center;
     font-size: 14px;
-    color: #555555;
+    color: #cccccc;
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 st.markdown("""
@@ -74,6 +84,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
@@ -81,7 +92,7 @@ with col1:
     <div class="card">
         <div style="font-size:40px;">🗂️</div>
         <div class="card-title">Datos preparados automáticamente</div>
-        <p style="color:#444444;">Tablas: personal de salud, afiliación, derechohabiencia, población, estados.</p>
+        <p>Tablas: personal de salud, afiliación, derechohabiencia, población, estados.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -90,7 +101,7 @@ with col2:
     <div class="card">
         <div style="font-size:40px;">📊</div>
         <div class="card-title">Dashboards interactivos</div>
-        <p style="color:#444444;">Gráficos, KPIs y filtros.</p>
+        <p>Gráficos, KPIs y filtros.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -99,15 +110,23 @@ with col3:
     <div class="card">
         <div style="font-size:40px;">📁</div>
         <div class="card-title">Navega desde el menú</div>
-        <p style="color:#444444;">Explora cada módulo desde la barra lateral.</p>
+        <p>Explora cada módulo desde la barra lateral.</p>
     </div>
     """, unsafe_allow_html=True)
 
 
+
 st.markdown("""
-<div style='text-align:center; font-size:17px; margin-top:35px; color:#333333;'>
+<div style='text-align:center; font-size:17px; margin-top:35px;'>
 Este proyecto te permitirá visualizar y analizar información clave de salud pública 
 en México mediante herramientas interactivas.
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div style='text-align:center; font-size:16px; margin-top:25px; color:white;'>
+<strong>Integrantes:</strong><br>
+Garcia Velazquez Jonathan Magdiel · Gaytan Castellanos Miguel Angel · Ramirez Morales Arturo · Ramos Ramirez Cynthia · Rios Gomez Jesus Dagoberto
 </div>
 """, unsafe_allow_html=True)
 

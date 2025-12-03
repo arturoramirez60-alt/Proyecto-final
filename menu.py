@@ -3,9 +3,16 @@ from C_visualizacion import inicio
 from mysql.connector import connect, Error
 import json
 import os
-
+"""
+Funcion para conctar a la base de datos
+si no funciona cierra el programa
+si si funciona crea un JSON para guardar los datos temporalmente, evitando asi, 
+que el usuario tenga que introducir los mismos datos cada vez que quiera ejecutar una funcion
+- No recibe parametros
+- retorna un estado booleano, True si funciono la conexion, False si no funciono
+"""
 def conectar_basededatos():
-    
+    print("Es necesario tener la base de datos recursos_en_salud en MySQL")
     user = input("nombre de usuario: ")
     ps = input("contraseña de su servidor: ")
     try:
@@ -34,9 +41,12 @@ def conectar_basededatos():
             print("-------------------------------------------------------")
 
         return False
-
+"""
+Menu principal, atravez de este se ejecutan todas las funciones
+- No recibe parametros
+- No retorna nada
+"""
 def main():
-    
     
     opc =  0
     while opc != 4:

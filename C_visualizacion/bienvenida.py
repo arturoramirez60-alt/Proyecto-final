@@ -130,6 +130,11 @@ Garcia Velazquez Jonathan Magdiel · Gaytan Castellanos Miguel Angel · Ramirez 
 </div>
 """, unsafe_allow_html=True)
 
+
+"""
+Inicia todas las tablas de resumen si no estan iniciadas en la sesion de streamlit
+"""
+
 if "tablas" not in st.session_state:
     st.session_state.tablas = TablasResumen()
     st.session_state.tablas.Personal_salud_año()

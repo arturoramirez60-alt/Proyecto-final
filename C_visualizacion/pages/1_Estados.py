@@ -58,30 +58,31 @@ def dashboard(tablas):
     with col2:
         promedio = list(pa_pie.cantidad[pa_pie.Estado == "Nacional"])[0]
         valor_estado = list(pa_pie.cantidad[pa_pie.Estado == estado])[0]
-        
         diferencia = round(((valor_estado / promedio) - 1) * 100, 2)
         
         if diferencia > 0:
             color_delta = "normal"
             delta_texto = f"{diferencia}%"
-            titulo_metrica = "Por arriba del promedio Nacional"
+            titulo_metrica = "Por arriba"
         elif diferencia < 0:
             color_delta = "inverse"
             delta_texto = f"{diferencia}%"
-            titulo_metrica = "Por debajo del promedio Nacional"
+            titulo_metrica = "Por debajo"
         else:
             color_delta = "off"
             delta_texto = "0%"
-            titulo_metrica = "Igual que el promedio Nacional"
+            titulo_metrica = "Igual"
 
-        st.markdown("<br><br>", unsafe_allow_html=True) 
+        st.space("large")
+        st.space("small")
+        
         st.metric(
             label="Afiliación respecto al promedio Nacional",
-            value=f"{valor_estado:,.0f} Afiliados", 
+            value=titulo_metrica, 
             delta=delta_texto,
             delta_color=color_delta
         )
-        st.caption(f"El valor Nacional es de {promedio:,.0f} afiliados.")
+    
 
     st.header("🌳 Distribución de Personal por Categoría (Treemap)")
     

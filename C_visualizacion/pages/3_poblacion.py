@@ -17,7 +17,8 @@ def dashboard(tablas):
     
     with col2:
 
-        st.markdown("<br>" * 2, unsafe_allow_html=True) 
+        st.space("large")
+        st.space("small")
         año_pob = st.selectbox("📅 Seleccione un año", lista_años_pob)
         
         personal_medico = list(psa_bar["Total"][(psa_bar.Estado == "Nacional") & (psa_bar.Año == año_pob) & (psa_bar.Poblacion == "Personal_medico")])[0]
@@ -62,7 +63,8 @@ def dashboard(tablas):
     
     with col2:
         if eje_x == eje_y:
-            st.markdown("<br>" * 4, unsafe_allow_html=True) 
+            st.space("large")
+            st.space("small")
             st.error("⚠️ **Seleccione dos puestos diferentes** para visualizar la correlación.")
         else:
       

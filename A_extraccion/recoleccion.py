@@ -10,7 +10,10 @@ from bs4 import BeautifulSoup as bs
 import time 
 import pandas as pd
 
-
+"""Esta funcion se usa para configurar el navegador, todas las funciones que necesitan abirir el navegador, pasan por esta primero
+- No recibe paramentros
+- Retorna un driver para el navegador
+"""
 def abrir_navegador():
     
     s = Service(ChromeDriverManager().install())
@@ -19,10 +22,19 @@ def abrir_navegador():
     navegador = webdriver.Chrome(service= s,options= opc)
     return navegador
 
+"""Se usa para extraer el contenido html de la pagina
+- No recibe parametros
+- Retorna el contentendio html de una pagina
+"""
 def contenido(content):
     soup = bs(content, "html.parser")
     return soup
 
+"""Ingresa a la pagina del INEGI para extraer los datos de la poblacion afiliada por estado, y 
+al pocercentaje de afiliacion a las diferentes instituciones de salud
+- No recibe parametros
+- Retorna 2 dataframe de pandas
+"""
 def derechohabiancia():
     
     poblacion_derechohabiencia = {"indicador" : [],
@@ -75,6 +87,12 @@ def derechohabiancia():
     
     return df, df2
 
+"""
+Esta es un funcion previa a 2 funciones 'personal_por_año' y 'personal_por_institucion'
+Entra a la pagina de salud del gobierno y entra a el apartade de recursos en salud
+- No recibe parametros
+- No retorna nada
+"""
 def navegar(navegador:webdriver.Chrome):
     
     time.sleep(3)
@@ -96,6 +114,11 @@ def navegar(navegador:webdriver.Chrome):
     except NoAlertPresentException:
         pass
      
+"""
+Extrae el total de personal de salud por año por estado
+- No recibe parametros
+- Retorno un dataframe de pandas
+"""
 def personal_por_año():
     columnas_df = [ "Año",
         "Medicos_generales_especialistas_y_odontologos",
@@ -159,6 +182,11 @@ def personal_por_año():
     df = pd.DataFrame(filas_df, columns= columnas_df)
     return df
 
+"""
+Extrae el total de personal por institucion por año
+- No recibe parametros
+- Retorno un dataframe de pandas
+"""
 def personal_por_institucion():
     
     data = {"institucion":[],
@@ -201,6 +229,10 @@ def personal_por_institucion():
     df =  pd.DataFrame(data)
     return df
 
+"""Ingresa a la pagina del INGEI para extraer los datos de la poblacion total en Mexico desde 1910 hasta 2020 en intervalos de aproximadamente 5 años
+- No recibe parametros
+- Retorno un dataframe de pandas
+"""
 def poblacion():
 
     data =  {"Año":[],

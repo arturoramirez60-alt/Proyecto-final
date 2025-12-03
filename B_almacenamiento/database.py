@@ -7,10 +7,18 @@ import pandas as  pd
 from mysql.connector import connect, Error
 import json
 
+"""
+Clase con los datos comunes que todo usuario debe tener para ejecutar el programa
+"""
 class DataDB(Enum):
     NAME_BD = "recursos_en_salud"
     SERVER = "127.0.0.1"
-    
+  
+"""
+Crea la cadena de conexion necesaria para conectar a pandas con MySQL
+- recibe ps : contraseña, user : usuario 
+- retorna la cadena de conexion
+"""  
 def crear_conexion(ps,user):
     cadena_conexion  = (f"mysql+mysqlconnector://"
                        f"{user}:"
@@ -20,6 +28,11 @@ def crear_conexion(ps,user):
 
     return create_engine(cadena_conexion).connect()
 
+"""
+Crea la conexion con MySQL
+- recibe ps : contraseña, user : usuario
+- retorna la conexion a MySQL
+"""
 def conectar_mysql(ps,user):
 
     conexion = connect(
@@ -28,7 +41,14 @@ def conectar_mysql(ps,user):
             password= ps,
             database= DataDB.NAME_BD.value)
     return conexion
-    
+   
+"""
+Lee el archivo JSON para extraer la contraseña y el usuario
+Esto se hace para que, una vez el usuario haya ejecutado el programa, pueda navegar libremente sin que requiera meter los mismos 
+datos las veces que el programa lo necesite, al finalizar el programa se borra el JSON y el archivo solo se crea si la conexion fue exitosa
+- No recibe parametros
+- retorna ps : contraseña, user : usuario
+""" 
 def read_json():
     with open("_Archivos/conexion.json", "r") as archivo:
         datos = dict(json.loads(archivo.read()))
@@ -36,7 +56,12 @@ def read_json():
     ps = datos["password"]
     return ps,user
      
-        
+"""
+Crea las llaves primarias de todas las tablas de la base de datos, esto se puede hacer asi ya que todas las tablas tienen la columna 'ID',
+menos poblacion, cuya llave primaria el la columna 'Año' pero esta se intercepta en el try
+- recibe ps : contraseña, user : usuario
+- No retorna nada
+""" 
 def crear_llaves_primarias(ps,user):
     
     conexion = conectar_mysql(ps,user)
@@ -48,11 +73,17 @@ def crear_llaves_primarias(ps,user):
             #Para todas las tablas cuya llave primaria es ID 
             cursor.execute(f"ALTER TABLE `recursos_en_salud`.`{tabla[0]}` CHANGE COLUMN `ID` `ID` INT NOT NULL ,ADD PRIMARY KEY (`ID`);;")
         except:
+            #Como solo en poblacion total la llave primaria no es ID entonces funcionara
             cursor.execute("ALTER TABLE `recursos_en_salud`.`poblacion_total` CHANGE COLUMN `Año` `Año` INT NOT NULL ,ADD PRIMARY KEY (`Año`);;")
     conexion.commit()
     cursor.close()
     cursor.close()
     
+"""
+Crea las relaciones de llave primaria a llave foranea segun el modelo de la base de datos relacional
+- recibe ps : contraseña, user : usuario
+- No retorna nada
+"""
 def crear_relaciones(ps,user):
     conexion = conectar_mysql(ps,user)
     cursor = conexion.cursor()
@@ -75,7 +106,12 @@ def crear_relaciones(ps,user):
     conexion.commit()
     cursor.close()
     conexion.close()
-    
+
+"""
+Crea los store procedures de la base de datos, los cuales ayudaran a llamar las tablas sin los ID's de referencia, en lugar de eso, el nombre del dato corespondiente
+- recibe ps : contraseña, user : usuario
+- No retorna nada
+"""
 def crear_procedures(ps,user):
     conexion = conectar_mysql(ps,user)
     cursor = conexion.cursor()
@@ -114,6 +150,12 @@ def crear_procedures(ps,user):
     cursor.close()
     conexion.close()
     
+"""
+Crea las tablas en MySQL asignado tipo de dato a cada columna de cada tabla,
+- recibe ps : contraseña, user : usuario y todas las tablas de la base de datos
+- No retorna nada
+"""
+
 def crear_tablas_sql(ps,user,poblacion_afiliada,poblacion_derechohabiente,personal_salud_año,personal_salud_institucion,poblacion_total,estados,instituciones):
     
     conexion =  crear_conexion(ps,user)
@@ -140,6 +182,13 @@ def crear_tablas_sql(ps,user,poblacion_afiliada,poblacion_derechohabiente,person
     estados.to_sql("estados",conexion, if_exists =  "replace", dtype={"ID":INT,"Estado":VARCHAR(25)})
     conexion.close()
     
+    
+"""
+ejecuta las funciones de limpieza, que a su vez ejecutan las funciones de extraccion, para posteriormente crear las tablas en mysql, llaves primarias, relaciones y procedures
+estos 3 ultimos encerrados en en try por que no se pueden repetir los procedures ni las relaciones
+- recibe ps : contraseña, user : usuario
+- No retorna nada
+"""
 def crear_tablas_webscraper(ps,user):
     
     poblacion_derechohabiente = li.limpiar_poblacion_derechohabiente()
@@ -157,8 +206,16 @@ def crear_tablas_webscraper(ps,user):
         crear_procedures(ps,user)
     except:
         pass
-    print("ya quedo")
-    
+    print("se crearon las tablas en la base de datos")
+
+"""
+Por medio de archivos cvs, crea las tablas en la base de datos, estos archivos csv son porducto de utilizar el codigo 'csvtosql' el cual se encuentra en la 
+carpeta 'sql_to', primero se creo la base de datos con el web scraping y despues se ejecuto ese archivo para obtener los csv's
+crear las tablas en mysql, llaves primarias, relaciones y procedures
+estos 3 ultimos encerrados en en try por que no se pueden repetir los procedures ni las relaciones
+- recibe ps : contraseña, user : usuario
+- No retorna nada
+"""
 def crear_tablas_csv(ps,user):
     ruta_relativa = "B_almacenamiento/datasets"
     poblacion_derechohabiente = pd.read_csv(f"{ruta_relativa}/poblacion_derechohabiente.csv",index_col="ID")
@@ -177,7 +234,7 @@ def crear_tablas_csv(ps,user):
     except:
         pass
 
-    print("ya quedo")
+    print("se crearon las tablas en la base de datos")
     
 
 

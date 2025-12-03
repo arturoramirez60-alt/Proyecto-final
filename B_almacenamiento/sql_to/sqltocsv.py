@@ -3,6 +3,10 @@ from enum import Enum
 from sqlalchemy import create_engine
 import pandas as pd
 
+
+"""
+Este es un codigo aparte del programa, pero fue muy util para automatizar la extraccion de los csv's de las tablas de la base de datos en cada modificacion
+"""
 class DataDB(Enum):
     USER = "root"
     PASSWORD = "12345678"
@@ -30,7 +34,12 @@ def crear_conexion():
                        f"/{DataDB.NAME_BD.value}")
 
     return create_engine(cadena_conexion).connect()
-
+"""
+realiza un show tables para ver todas las tablas en la base de datos,
+luego por cada tabla la convierte en un csv
+- no recibe parametros
+- no retorna nada
+"""
 def sqltocsv():
     conexion = conectar_mysql()
     cursor = conexion.cursor()

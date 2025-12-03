@@ -2,6 +2,13 @@ from  A_extraccion import recoleccion as rec
 import pandas as pd
 import pandas as  pd
 
+"""
+Crea 2 diccionarios de 2 formatos
+uno en formato clave : valor, esto para poder mapear las Instituciones provenientes de los web scrapings y crear las llaves foraneas
+El otro en formato de dataframe, esto para posteriermente crear la tabla en la base de datos en MySQL
+- No recibe parametros
+- Retorna 1 diccionario y 1 dataframe
+"""
 def crear_instituciones():
     instituciones_diccionario = {
         "IMSS": 1,
@@ -43,6 +50,14 @@ def crear_instituciones():
     df_instituciones =  pd.DataFrame(instituciones)
     crear_indice(df_instituciones)
     return instituciones_diccionario,df_instituciones
+
+"""
+Crea 2 diccionarios de 2 formatos
+uno en formato clave : valor, esto para poder mapear los Estados provenientes de los web scrapings y crear las llaves foraneas
+El otro en formato de dataframe, esto para posteriermente crear la tabla en la base de datos en MySQL
+- No recibe parametros
+- Retorna 1 diccionario y 1 dataframe
+"""
 
 def crear_estados():
     estados = {
@@ -122,6 +137,13 @@ def crear_estados():
     crear_indice(df_estados)
     return estados_diccionario, df_estados
 
+"""
+funcion que sirve para eliminar caracteres especiales en los datos obtenidos por el webscraping
+convierte las columnas a tipo de dato cadena, para posteriormente reemplazar cada caracter
+- recibe un dataframe
+- retorna un dataframe
+"""
+
 def limpiar_columnas(df:pd.DataFrame):
     
     cols =  df.columns
@@ -131,25 +153,49 @@ def limpiar_columnas(df:pd.DataFrame):
         df[col] = df[col].str.replace("\n","")
     return df
 
+
+"""
+Calcula el nummero de filas de un dataframe para crear una lista con el rango de filas, posteriormente la agrega al dataframe
+y lo establece como ID.
+- recibe un dataframe
+- retorna un dataframe
+"""
 def crear_indice(df:pd.DataFrame):
     
     indices =  [i + 1 for i in range(len(df))]
     df["ID"] = indices
     df.set_index("ID",inplace= True)
     return df
-    
+   
+"""
+Con el diccionario creado en 'crear_intituciones' cambia las instituciones por numeros correpondientes
+- recibe un dataframe
+- retorna un dataframe
+""" 
 def mapear_instituciones(df:pd.DataFrame):
     
     instituciones,_ =  crear_instituciones()
     df.ID_Institucion =  df.ID_Institucion.map(instituciones)
     return df
 
+"""
+Con el diccionario creado en 'crear_estados' cambia los estados por numeros correpondientes
+- recibe un dataframe
+- retorna un dataframe
+""" 
 def mapear_estados(df:pd.DataFrame):
     
     estados,_ = crear_estados()
     df.ID_Estado = df.ID_Estado.map(estados)
     return df
 
+"""
+Ejecuta la extraccion de la poblacion derechohabiente y limpia los datos obtenidos
+limpia columnas, reemplaza algunos nombres, renombra columnas y selecciona columans
+tambien ejecuta otras funciones como 'mapear_instituciones' y 'crear_indices'
+- no recibe parametros
+- retorna un dataframe
+"""
 def limpiar_poblacion_derechohabiente():
     
     df, _ = rec.derechohabiancia() 
@@ -158,8 +204,7 @@ def limpiar_poblacion_derechohabiente():
     
     df.ID_Institucion = df.ID_Institucion.str.replace("PEMEX SDN o SM","PEMEX")
     df.ID_Institucion = df.ID_Institucion.str.replace("ISSSTE o ISSSTE estatal","ISSSTE")
-    print(df)
-    
+
     df.ID_Institucion = df.ID_Institucion.str.upper()
     df.drop(columns= "indicador", inplace= True)
     df.Porcentaje = df.Porcentaje.astype("float")
@@ -169,6 +214,13 @@ def limpiar_poblacion_derechohabiente():
     df = df[["ID_Institucion","Porcentaje","Año"]]
     return df
 
+"""
+Ejecuta la extraccion de la poblacion afiliada y limpia los datos obtenidos
+limpia columnas, reemplaza algunos nombres, renombra columnas y selecciona columans
+tambien ejecuta otras funciones como 'mapear_estados' y 'crear_indices'
+- no recibe parametros
+- retorna un dataframe
+"""
 def limpiar_poblacion_afilada():
 
     _, df = rec.derechohabiancia() 
@@ -188,6 +240,13 @@ def limpiar_poblacion_afilada():
 
     return df
     
+"""
+Ejecuta la extraccion de personal_por_año y limpia los datos obtenidos
+limpia las columnas y renombra columnas
+tambien ejecuta otras funciones como 'mapear_estados' y 'crear_indices'
+- no recibe parametros
+- retorna un dataframe
+"""
 def limpiar_personal_salud_año():
     
     df = rec.personal_por_año()
@@ -197,6 +256,14 @@ def limpiar_personal_salud_año():
     mapear_estados(df)
     crear_indice(df)
     return df
+
+"""
+Ejecuta la extraccion de personal_por_institucion y limpia los datos obtenidos
+limpia las columnas y renombra columnas
+tambien ejecuta otras funciones como 'mapear_instituciones' y 'crear_indices'
+- no recibe parametros
+- retorna un dataframe
+"""
 
 def limpiar_personal_salud_institucion():
     
@@ -209,7 +276,19 @@ def limpiar_personal_salud_institucion():
     crear_indice(df)
     df =  df[["ID_Institucion","total","Año"]]
     return df
-    
+
+"""
+Ejecuta la extraccion de poblacion y limpia los datos obtenidos
+limpia las columnas y renombra columnas
+
+crea un data frame desde el año menor hasta el año mayor obtenidos, depues hace un left join para mantener la pobacion registrada en la recoleccion de poblacion
+despues hace un ffill para llenar todos los años donde no haya poblacion registrada, por lo que el resultado es una extencion de los años, donde en cada año se tiene
+la ultima poblacion registrada
+tambien ejecuta otras funciones como 'limpiar_columnas'
+Establece la columna de Año como el indice
+- no recibe parametros
+- retorna un dataframe
+"""
 def limpiar_poblacion():
 
     df_temp = rec.poblacion()

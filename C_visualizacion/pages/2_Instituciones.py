@@ -96,7 +96,9 @@ def dashboard(tablas):
         st.plotly_chart(scatter, width='stretch')
         
     with col2:
-        st.markdown("<br>" * 6, unsafe_allow_html=True) 
+        
+        st.space("large")
+        st.space("large")
         with st.expander("🔍 Ver Datos Crudos"):
             st.dataframe(psi_pd_scatter, width='stretch')
 

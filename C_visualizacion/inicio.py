@@ -2,6 +2,10 @@ import subprocess
 import sys
 import streamlit as st
 
+"""
+Ejecuta el archivo de bienvenida y todas las demas paginas del dashboard
+"""
+
 def main():
 
     streamlit_file = r"C_visualizacion\bienvenida.py"
